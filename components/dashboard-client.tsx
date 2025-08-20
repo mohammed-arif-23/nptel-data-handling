@@ -58,7 +58,28 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   }
 
   const updateWeekStatus = async (week: number, status: string) => {
-    if (!student || !userClass) return
+    console.log("[v0] updateWeekStatus ENTRY - Function called with:", {
+      week,
+      status,
+      hasStudent: !!student,
+      studentRegisterNumber: student?.register_number,
+      userClass,
+      userClassType: typeof userClass,
+    })
+
+    if (!student) {
+      console.log("[v0] updateWeekStatus EARLY RETURN - No student data")
+      alert("Error: No student data found. Please logout and login again.")
+      return
+    }
+
+    if (!userClass) {
+      console.log("[v0] updateWeekStatus EARLY RETURN - No userClass data")
+      alert("Error: No class information found. Please logout and login again.")
+      return
+    }
+
+    console.log("[v0] updateWeekStatus PROCEEDING - All checks passed")
 
     setIsUpdating(true)
     const weekColumn = `week_${week}_status`
@@ -77,36 +98,63 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
 
       console.log("[v0] Update result:", { data, error })
 
-      if (!error && data) {
-        if (status === "completed" && week < courseDuration) {
-          const nextWeekColumn = `week_${week + 1}_status`
-          const nextWeekStatus = data[nextWeekColumn as keyof StudentData] as string
+      if (error) {
+        console.error("[v0] Database update failed:", error)
+        alert(`Failed to update status: ${error.message}`)
+        setIsUpdating(false)
+        return
+      }
 
-          if (nextWeekStatus === "not_started") {
-            const { data: updatedData } = await supabase
-              .from(tableName)
-              .update({ [nextWeekColumn]: "in_progress" })
-              .eq("register_number", student.register_number)
-              .select()
-              .single()
+      if (!data) {
+        console.error("[v0] No data returned from update")
+        alert("Failed to update status: No data returned")
+        setIsUpdating(false)
+        return
+      }
 
-            if (updatedData) {
-              setStudent(updatedData)
-              localStorage.setItem("student", JSON.stringify(updatedData))
-            }
-          } else {
+      console.log("[v0] Database update successful, updating local state")
+
+      if (status === "completed" && week < courseDuration) {
+        const nextWeekColumn = `week_${week + 1}_status`
+        const nextWeekStatus = data[nextWeekColumn as keyof StudentData] as string
+
+        console.log("[v0] Checking next week progression:", { nextWeekColumn, nextWeekStatus })
+
+        if (nextWeekStatus === "not_started") {
+          console.log("[v0] Setting next week to in_progress")
+          const { data: updatedData, error: nextWeekError } = await supabase
+            .from(tableName)
+            .update({ [nextWeekColumn]: "in_progress" })
+            .eq("register_number", student.register_number)
+            .select()
+            .single()
+
+          if (nextWeekError) {
+            console.error("[v0] Failed to update next week:", nextWeekError)
+            // Still update current week even if next week update fails
             setStudent(data)
             localStorage.setItem("student", JSON.stringify(data))
+          } else if (updatedData) {
+            console.log("[v0] Next week updated successfully")
+            setStudent(updatedData)
+            localStorage.setItem("student", JSON.stringify(updatedData))
           }
         } else {
+          console.log("[v0] Next week already in progress or completed, not updating")
           setStudent(data)
           localStorage.setItem("student", JSON.stringify(data))
         }
       } else {
-        console.error("[v0] Database update failed:", error)
+        console.log("[v0] No next week progression needed")
+        setStudent(data)
+        localStorage.setItem("student", JSON.stringify(data))
       }
+
+      console.log("[v0] Status update completed successfully")
+      alert("Status updated successfully!")
     } catch (error) {
       console.error("[v0] Error updating week status:", error)
+      alert(`Error updating status: ${error}`)
     }
 
     setIsUpdating(false)
@@ -188,7 +236,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-2">
               <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               <h1 className="text-lg sm:text-2xl font-bold text-white">NPTEL Tracker</h1>
@@ -315,7 +363,15 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                       </div>
                       <Select
                         value={status}
-                        onValueChange={(value) => updateWeekStatus(week, value)}
+                        onValueChange={(value) => {
+                          console.log("[v0] Dropdown onValueChange triggered:", {
+                            currentStatus: status,
+                            newValue: value,
+                            week: week,
+                          })
+                          console.log("[v0] About to call updateWeekStatus with:", { week, value })
+                          updateWeekStatus(week, value)
+                        }}
                         disabled={isUpdating}
                       >
                         <SelectTrigger className="w-full sm:w-40 bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
