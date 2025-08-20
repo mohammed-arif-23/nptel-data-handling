@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { GraduationCap, LogOut, Calendar, CheckCircle, Clock, XCircle, BookOpen, BarChart3 } from "lucide-react"
+import { GraduationCap, LogOut, Calendar, CheckCircle, Clock, BookOpen, BarChart3 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Link from "next/link"
@@ -18,6 +18,7 @@ interface StudentData {
   email: string
   roll_number: string
   register_number: string
+  course_duration: string
   week_1_status: string
   week_2_status: string
   week_3_status: string
@@ -39,7 +40,6 @@ interface DashboardClientProps {
 }
 
 const statusOptions = [
-  { value: "not_started", label: "Not Started", icon: XCircle, color: "text-slate-400" },
   { value: "in_progress", label: "In Progress", icon: Clock, color: "text-yellow-400" },
   { value: "completed", label: "Completed", icon: CheckCircle, color: "text-green-400" },
 ]
@@ -49,6 +49,8 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   const [isUpdating, setIsUpdating] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  const courseDuration = student?.course_duration ? Number.parseInt(student.course_duration) : 12
 
   const handleLogout = () => {
     localStorage.removeItem("student")
@@ -63,6 +65,8 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
     const tableName = userClass === "II-IT" ? "ii_it_students" : "iii_it_students"
 
     try {
+      console.log("[v0] Updating week status:", { week, status, tableName, register_number: student.register_number })
+
       // Update current week status
       const { data, error } = await supabase
         .from(tableName)
@@ -71,9 +75,10 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
         .select()
         .single()
 
+      console.log("[v0] Update result:", { data, error })
+
       if (!error && data) {
-        // If current week is completed, set next week to in_progress
-        if (status === "completed" && week < 12) {
+        if (status === "completed" && week < courseDuration) {
           const nextWeekColumn = `week_${week + 1}_status`
           const nextWeekStatus = data[nextWeekColumn as keyof StudentData] as string
 
@@ -97,9 +102,11 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
           setStudent(data)
           localStorage.setItem("student", JSON.stringify(data))
         }
+      } else {
+        console.error("[v0] Database update failed:", error)
       }
     } catch (error) {
-      console.error("Error updating week status:", error)
+      console.error("[v0] Error updating week status:", error)
     }
 
     setIsUpdating(false)
@@ -115,32 +122,31 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   }
 
   const calculateProgress = () => {
-    if (!student) return { completed: 0, inProgress: 0, notStarted: 12, percentage: 0 }
+    if (!student) return { completed: 0, inProgress: 0, notStarted: courseDuration, percentage: 0 }
 
     let completed = 0
     let inProgress = 0
     let notStarted = 0
 
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= courseDuration; i++) {
       const status = getWeekStatus(i)
       if (status === "completed") completed++
       else if (status === "in_progress") inProgress++
       else notStarted++
     }
 
-    const percentage = Math.round((completed / 12) * 100)
+    const percentage = Math.round((completed / courseDuration) * 100)
     return { completed, inProgress, notStarted, percentage }
   }
 
   const getCurrentWeek = () => {
-    // Simple logic: find the first week that's not completed, or week 1 if all are completed
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= courseDuration; i++) {
       const status = getWeekStatus(i)
       if (status !== "completed") {
         return i
       }
     }
-    return 12 // If all completed, show week 12
+    return courseDuration // If all completed, show last week
   }
 
   const progress = calculateProgress()
@@ -148,16 +154,20 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
 
   if (!student) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-        <Card className="bg-slate-800/50 border-slate-700 max-w-md">
+      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <Card className="bg-gray-900 border-gray-800 max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-white">Profile Setup Required</CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardDescription className="text-gray-300">
               Please complete your profile setup to access the dashboard.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={handleLogout} variant="outline" className="border-slate-600 text-slate-300 bg-transparent">
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="border-gray-600 text-gray-300 bg-transparent hover:bg-gray-800"
+            >
               Logout and Try Again
             </Button>
           </CardContent>
@@ -235,7 +245,9 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
               <div className="space-y-2">
                 <div className="text-xl sm:text-2xl font-bold text-white">{progress.percentage}%</div>
                 <Progress value={progress.percentage} className="h-2" />
-                <p className="text-gray-300 text-xs sm:text-sm">{progress.completed} of 12 weeks completed</p>
+                <p className="text-gray-300 text-xs sm:text-sm">
+                  {progress.completed} of {courseDuration} weeks completed
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -306,7 +318,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                         onValueChange={(value) => updateWeekStatus(week, value)}
                         disabled={isUpdating}
                       >
-                        <SelectTrigger className="w-full sm:w-40 bg-gray-800 border-gray-600 text-white">
+                        <SelectTrigger className="w-full sm:w-40 bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-600">
@@ -314,7 +326,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="text-white hover:bg-gray-700"
+                              className="text-white hover:bg-gray-700 focus:bg-gray-700"
                             >
                               <div className="flex items-center gap-2">
                                 <option.icon className={`h-4 w-4 ${option.color}`} />
@@ -333,7 +345,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
             <div className="mt-4 p-3 sm:p-4 bg-gray-800 rounded-lg border border-gray-700">
               <p className="text-gray-300 text-xs sm:text-sm text-center">
                 <Link href="/submissions" className="text-white hover:text-gray-300 underline">
-                  View all 12 weeks progress in Submissions page
+                  View all {courseDuration} weeks progress in Submissions page
                 </Link>
               </p>
             </div>
