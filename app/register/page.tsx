@@ -46,8 +46,7 @@ export default function RegisterPage() {
         nptel_course_name: formData.nptel_course_name,
         nptel_course_id: formData.nptel_course_id,
         course_duration: formData.course_duration,
-        // Initialize all week statuses to 'not_started'
-        week_1_status: "not_started",
+        week_1_status: "in_progress",
         week_2_status: "not_started",
         week_3_status: "not_started",
         week_4_status: "not_started",

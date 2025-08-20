@@ -101,7 +101,19 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
     return { completed, inProgress, notStarted, percentage }
   }
 
+  const getCurrentWeek = () => {
+    // Simple logic: find the first week that's not completed, or week 1 if all are completed
+    for (let i = 1; i <= 12; i++) {
+      const status = getWeekStatus(i)
+      if (status !== "completed") {
+        return i
+      }
+    }
+    return 12 // If all completed, show week 12
+  }
+
   const progress = calculateProgress()
+  const currentWeek = getCurrentWeek()
 
   if (!student) {
     return (
@@ -224,14 +236,15 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
         {/* Weekly Progress Timeline */}
         <Card className="bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-white">Weekly Progress Timeline</CardTitle>
+            <CardTitle className="text-white">Current Week Progress</CardTitle>
             <CardDescription className="text-slate-300">
-              Track your progress through all 12 weeks of the NPTEL course
+              Track your progress for the current week. View all weeks in Submissions page.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((week) => {
+              {(() => {
+                const week = currentWeek
                 const status = getWeekStatus(week)
                 const statusInfo = getStatusInfo(status)
                 const StatusIcon = statusInfo.icon
@@ -239,22 +252,23 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                 return (
                   <div
                     key={week}
-                    className="flex items-center justify-between p-4 rounded-lg bg-slate-700/30 border border-slate-600"
+                    className="flex items-center justify-between p-6 rounded-lg bg-slate-700/30 border border-slate-600"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-600 text-white text-sm font-semibold">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white text-lg font-bold">
                         {week}
                       </div>
                       <div>
-                        <h3 className="text-white font-medium">Week {week}</h3>
-                        <p className="text-slate-400 text-sm">NPTEL Course Content</p>
+                        <h3 className="text-white font-semibold text-lg">Week {week}</h3>
+                        <p className="text-slate-400">NPTEL Course Content</p>
+                        <p className="text-slate-500 text-sm">Current active week</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <div className={`flex items-center gap-2 ${statusInfo.color}`}>
-                        <StatusIcon className="h-4 w-4" />
-                        <span className="text-sm font-medium">{statusInfo.label}</span>
+                        <StatusIcon className="h-5 w-5" />
+                        <span className="font-medium">{statusInfo.label}</span>
                       </div>
                       <Select
                         value={status}
@@ -282,7 +296,15 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                     </div>
                   </div>
                 )
-              })}
+              })()}
+            </div>
+
+            <div className="mt-4 p-4 bg-slate-700/20 rounded-lg border border-slate-600">
+              <p className="text-slate-300 text-sm text-center">
+                <Link href="/submissions" className="text-blue-400 hover:text-blue-300 underline">
+                  View all 12 weeks progress in Submissions page
+                </Link>
+              </p>
             </div>
           </CardContent>
         </Card>
