@@ -31,18 +31,44 @@ export default function RegisterPage() {
     setError("")
 
     try {
-      console.log("[v0] Starting registration with data:", formData) // Added debug logging
+      console.log("[v0] Starting registration with data:", formData)
       const supabase = createClient()
 
       const tableName = formData.class_name === "II-IT" ? "ii_it_students" : "iii_it_students"
-      console.log("[v0] Using table:", tableName) // Added debug logging
+      console.log("[v0] Using table:", tableName)
 
-      const { data, error } = await supabase.from(tableName).insert([formData]).select().single()
+      const dbData = {
+        register_number: formData.register_number,
+        student_name: formData.name, // Map 'name' to 'student_name'
+        email: formData.email,
+        mobile: formData.mobile,
+        class_name: formData.class_name,
+        nptel_course_name: formData.nptel_course_name,
+        nptel_course_id: formData.nptel_course_id,
+        course_duration: formData.course_duration,
+        // Initialize all week statuses to 'not_started'
+        week_1_status: "not_started",
+        week_2_status: "not_started",
+        week_3_status: "not_started",
+        week_4_status: "not_started",
+        week_5_status: "not_started",
+        week_6_status: "not_started",
+        week_7_status: "not_started",
+        week_8_status: "not_started",
+        week_9_status: "not_started",
+        week_10_status: "not_started",
+        week_11_status: "not_started",
+        week_12_status: "not_started",
+      }
 
-      console.log("[v0] Insert result:", { data, error }) // Added debug logging
+      console.log("[v0] Mapped database data:", dbData)
+
+      const { data, error } = await supabase.from(tableName).insert([dbData]).select().single()
+
+      console.log("[v0] Insert result:", { data, error })
 
       if (error) {
-        console.log("[v0] Database error:", error) // Added debug logging
+        console.log("[v0] Database error:", error)
         if (error.code === "23505") {
           setError("Register number already exists")
         } else if (error.code === "42P01") {
@@ -53,13 +79,13 @@ export default function RegisterPage() {
         return
       }
 
-      const studentData = data || formData
+      const studentData = data || dbData
       localStorage.setItem("student", JSON.stringify(studentData))
-      console.log("[v0] Stored student data:", studentData) // Added debug logging
+      console.log("[v0] Stored student data:", studentData)
 
       router.push("/dashboard")
     } catch (err) {
-      console.log("[v0] Catch error:", err) // Added debug logging
+      console.log("[v0] Catch error:", err)
       setError("Something went wrong. Please try again.")
     } finally {
       setLoading(false)
