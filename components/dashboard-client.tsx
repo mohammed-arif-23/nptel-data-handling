@@ -17,6 +17,7 @@ interface StudentData {
   name: string
   email: string
   roll_number: string
+  register_number: string
   week_1_status: string
   week_2_status: string
   week_3_status: string
@@ -49,8 +50,8 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   const router = useRouter()
   const supabase = createClient()
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
+  const handleLogout = () => {
+    localStorage.removeItem("student")
     router.push("/")
   }
 
@@ -61,16 +62,46 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
     const weekColumn = `week_${week}_status`
     const tableName = userClass === "II-IT" ? "ii_it_students" : "iii_it_students"
 
-    const { data, error } = await supabase
-      .from(tableName)
-      .update({ [weekColumn]: status })
-      .eq("user_id", user.id)
-      .select()
-      .single()
+    try {
+      // Update current week status
+      const { data, error } = await supabase
+        .from(tableName)
+        .update({ [weekColumn]: status })
+        .eq("register_number", student.register_number)
+        .select()
+        .single()
 
-    if (!error && data) {
-      setStudent(data)
+      if (!error && data) {
+        // If current week is completed, set next week to in_progress
+        if (status === "completed" && week < 12) {
+          const nextWeekColumn = `week_${week + 1}_status`
+          const nextWeekStatus = data[nextWeekColumn as keyof StudentData] as string
+
+          if (nextWeekStatus === "not_started") {
+            const { data: updatedData } = await supabase
+              .from(tableName)
+              .update({ [nextWeekColumn]: "in_progress" })
+              .eq("register_number", student.register_number)
+              .select()
+              .single()
+
+            if (updatedData) {
+              setStudent(updatedData)
+              localStorage.setItem("student", JSON.stringify(updatedData))
+            }
+          } else {
+            setStudent(data)
+            localStorage.setItem("student", JSON.stringify(data))
+          }
+        } else {
+          setStudent(data)
+          localStorage.setItem("student", JSON.stringify(data))
+        }
+      }
+    } catch (error) {
+      console.error("Error updating week status:", error)
     }
+
     setIsUpdating(false)
   }
 
@@ -143,20 +174,20 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   const currentClass = userClass ? classInfo[userClass as keyof typeof classInfo] : classInfo["II-IT"]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
+      <header className="border-b border-gray-800 bg-gray-900">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-blue-400" />
-              <h1 className="text-2xl font-bold text-white">NPTEL Tracker</h1>
+              <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              <h1 className="text-lg sm:text-2xl font-bold text-white">NPTEL Tracker</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 asChild
                 variant="outline"
-                className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
+                className="flex-1 sm:flex-none border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent text-sm"
               >
                 <Link href="/submissions">
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -166,7 +197,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
+                className="flex-1 sm:flex-none border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent text-sm"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -176,57 +207,57 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6 sm:py-8">
         {/* User Info */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <Card className="bg-gray-900 border-gray-800">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <BookOpen className="h-5 w-5 text-slate-400" />
-              <CardTitle className="text-sm font-medium text-slate-200 ml-2">Student Info</CardTitle>
+              <BookOpen className="h-5 w-5 text-gray-400" />
+              <CardTitle className="text-sm font-medium text-gray-200 ml-2">Student Info</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="text-white font-semibold">{student.name}</p>
-                <p className="text-slate-300 text-sm">Roll: {student.roll_number}</p>
-                <Badge className={`${currentClass.bgColor} ${currentClass.textColor} border-0`}>
+                <p className="text-white font-semibold text-sm sm:text-base">{student.name}</p>
+                <p className="text-gray-300 text-xs sm:text-sm">Roll: {student.roll_number}</p>
+                <Badge className={`${currentClass.bgColor} ${currentClass.textColor} border-0 text-xs`}>
                   {currentClass.name}
                 </Badge>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-900 border-gray-800">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <BookOpen className="h-5 w-5 text-slate-400" />
-              <CardTitle className="text-sm font-medium text-slate-200 ml-2">Overall Progress</CardTitle>
+              <BookOpen className="h-5 w-5 text-gray-400" />
+              <CardTitle className="text-sm font-medium text-gray-200 ml-2">Overall Progress</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-white">{progress.percentage}%</div>
+                <div className="text-xl sm:text-2xl font-bold text-white">{progress.percentage}%</div>
                 <Progress value={progress.percentage} className="h-2" />
-                <p className="text-slate-300 text-sm">{progress.completed} of 12 weeks completed</p>
+                <p className="text-gray-300 text-xs sm:text-sm">{progress.completed} of 12 weeks completed</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-900 border-gray-800 sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <Calendar className="h-5 w-5 text-slate-400" />
-              <CardTitle className="text-sm font-medium text-slate-200 ml-2">Status Summary</CardTitle>
+              <Calendar className="h-5 w-5 text-gray-400" />
+              <CardTitle className="text-sm font-medium text-gray-200 ml-2">Status Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-green-400">Completed:</span>
-                  <span className="text-white">{progress.completed}</span>
+              <div className="grid grid-cols-3 gap-4 sm:space-y-1 sm:block text-xs sm:text-sm">
+                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
+                  <span className="text-green-400">Completed</span>
+                  <span className="text-white font-bold">{progress.completed}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-yellow-400">In Progress:</span>
-                  <span className="text-white">{progress.inProgress}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
+                  <span className="text-yellow-400">In Progress</span>
+                  <span className="text-white font-bold">{progress.inProgress}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Not Started:</span>
-                  <span className="text-white">{progress.notStarted}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
+                  <span className="text-gray-400">Not Started</span>
+                  <span className="text-white font-bold">{progress.notStarted}</span>
                 </div>
               </div>
             </CardContent>
@@ -234,10 +265,10 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
         </div>
 
         {/* Weekly Progress Timeline */}
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
-            <CardTitle className="text-white">Current Week Progress</CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardTitle className="text-white text-lg sm:text-xl">Current Week Progress</CardTitle>
+            <CardDescription className="text-gray-300 text-sm">
               Track your progress for the current week. View all weeks in Submissions page.
             </CardDescription>
           </CardHeader>
@@ -252,38 +283,38 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                 return (
                   <div
                     key={week}
-                    className="flex items-center justify-between p-6 rounded-lg bg-slate-700/30 border border-slate-600"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 rounded-lg bg-gray-800 border border-gray-700 gap-4"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white text-lg font-bold">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                      <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-black text-base sm:text-lg font-bold">
                         {week}
                       </div>
-                      <div>
-                        <h3 className="text-white font-semibold text-lg">Week {week}</h3>
-                        <p className="text-slate-400">NPTEL Course Content</p>
-                        <p className="text-slate-500 text-sm">Current active week</p>
+                      <div className="flex-1 sm:flex-none">
+                        <h3 className="text-white font-semibold text-base sm:text-lg">Week {week}</h3>
+                        <p className="text-gray-400 text-sm">NPTEL Course Content</p>
+                        <p className="text-gray-500 text-xs sm:text-sm">Current active week</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <div className={`flex items-center gap-2 ${statusInfo.color}`}>
-                        <StatusIcon className="h-5 w-5" />
-                        <span className="font-medium">{statusInfo.label}</span>
+                        <StatusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <span className="font-medium text-sm sm:text-base">{statusInfo.label}</span>
                       </div>
                       <Select
                         value={status}
                         onValueChange={(value) => updateWeekStatus(week, value)}
                         disabled={isUpdating}
                       >
-                        <SelectTrigger className="w-40 bg-slate-700 border-slate-600 text-white">
+                        <SelectTrigger className="w-full sm:w-40 bg-gray-800 border-gray-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectContent className="bg-gray-800 border-gray-600">
                           {statusOptions.map((option) => (
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="text-white hover:bg-slate-600"
+                              className="text-white hover:bg-gray-700"
                             >
                               <div className="flex items-center gap-2">
                                 <option.icon className={`h-4 w-4 ${option.color}`} />
@@ -299,9 +330,9 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
               })()}
             </div>
 
-            <div className="mt-4 p-4 bg-slate-700/20 rounded-lg border border-slate-600">
-              <p className="text-slate-300 text-sm text-center">
-                <Link href="/submissions" className="text-blue-400 hover:text-blue-300 underline">
+            <div className="mt-4 p-3 sm:p-4 bg-gray-800 rounded-lg border border-gray-700">
+              <p className="text-gray-300 text-xs sm:text-sm text-center">
+                <Link href="/submissions" className="text-white hover:text-gray-300 underline">
                   View all 12 weeks progress in Submissions page
                 </Link>
               </p>

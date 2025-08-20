@@ -186,17 +186,14 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium mb-2">Course Duration</label>
-            <select
+            <input
+              type="text"
               required
               value={formData.course_duration}
               onChange={(e) => setFormData({ ...formData, course_duration: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
-            >
-              <option value="">Select duration</option>
-              <option value="12 weeks">12 weeks</option>
-              <option value="8 weeks">8 weeks</option>
-              <option value="4 weeks">4 weeks</option>
-            </select>
+              placeholder="e.g., 12 weeks, 8 weeks, 4 weeks"
+            />
           </div>
 
           {error && <div className="text-red-400 text-sm text-center bg-red-900/20 p-3 rounded-lg">{error}</div>}
