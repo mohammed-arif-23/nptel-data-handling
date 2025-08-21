@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { GraduationCap, LogOut, Calendar, CheckCircle, Clock, BookOpen, BarChart3 } from "lucide-react"
+import { GraduationCap, LogOut, Calendar, CheckCircle, Clock, BookOpen, BarChart3, TrendingUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Link from "next/link"
@@ -151,7 +151,9 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
       }
 
       console.log("[v0] Status update completed successfully")
-      alert("Status updated successfully!")
+      
+      // Redirect to success page instead of showing an alert
+      router.push("/success")
     } catch (error) {
       console.error("[v0] Error updating week status:", error)
       alert(`Error updating status: ${error}`)
@@ -232,15 +234,12 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
   const currentClass = userClass ? classInfo[userClass as keyof typeof classInfo] : classInfo["II-IT"]
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-[70vh] bg-black">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900">
+      <header className="border-b border-gray-800 bg-black">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              <h1 className="text-lg sm:text-2xl font-bold text-white">NPTEL Tracker</h1>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+              <h1 className="text-lg sm:text-2xl font-bold text-white">Student Name : {user.name}</h1>
             <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 asChild
@@ -266,71 +265,32 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
       </header>
 
       <main className="container mx-auto px-4 py-6 sm:py-8">
-        {/* User Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <Card className="bg-gray-900 border-gray-800">
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <BookOpen className="h-5 w-5 text-gray-400" />
-              <CardTitle className="text-sm font-medium text-gray-200 ml-2">Student Info</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <p className="text-white font-semibold text-sm sm:text-base">{student.name}</p>
-                <p className="text-gray-300 text-xs sm:text-sm">Roll: {student.roll_number}</p>
-                <Badge className={`${currentClass.bgColor} ${currentClass.textColor} border-0 text-xs`}>
-                  {currentClass.name}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Simplified User Info and Progress */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-black border-white-300">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <BookOpen className="h-5 w-5 text-gray-400" />
+              <TrendingUp className="h-5 w-5 text-blue-400" />
               <CardTitle className="text-sm font-medium text-gray-200 ml-2">Overall Progress</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="text-xl sm:text-2xl font-bold text-white">{progress.percentage}%</div>
-                <Progress value={progress.percentage} className="h-2" />
+                <Progress value={progress.percentage} color="white" className="h-2" />
                 <p className="text-gray-300 text-xs sm:text-sm">
                   {progress.completed} of {courseDuration} weeks completed
                 </p>
               </div>
             </CardContent>
           </Card>
-
-          <Card className="bg-gray-900 border-gray-800 sm:col-span-2 lg:col-span-1">
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <Calendar className="h-5 w-5 text-gray-400" />
-              <CardTitle className="text-sm font-medium text-gray-200 ml-2">Status Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4 sm:space-y-1 sm:block text-xs sm:text-sm">
-                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
-                  <span className="text-green-400">Completed</span>
-                  <span className="text-white font-bold">{progress.completed}</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
-                  <span className="text-yellow-400">In Progress</span>
-                  <span className="text-white font-bold">{progress.inProgress}</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between text-center sm:text-left">
-                  <span className="text-gray-400">Not Started</span>
-                  <span className="text-white font-bold">{progress.notStarted}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Weekly Progress Timeline */}
-        <Card className="bg-gray-900 border-gray-800">
+        {/* Weekly Progress */}
+        <Card className="bg-black border-white-300">
           <CardHeader>
             <CardTitle className="text-white text-lg sm:text-xl">Current Week Progress</CardTitle>
-            <CardDescription className="text-gray-300 text-sm">
-              Track your progress for the current week. View all weeks in Submissions page.
-            </CardDescription>
+    
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
@@ -343,7 +303,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                 return (
                   <div
                     key={week}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 rounded-lg bg-gray-800 border border-gray-700 gap-4"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-2 rounded-lg bg-black  gap-4"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-black text-base sm:text-lg font-bold">
@@ -363,26 +323,20 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
                       </div>
                       <Select
                         value={status}
-                        onValueChange={(value) => {
-                          console.log("[v0] Dropdown onValueChange triggered:", {
-                            currentStatus: status,
-                            newValue: value,
-                            week: week,
-                          })
-                          console.log("[v0] About to call updateWeekStatus with:", { week, value })
+                        onValueChange={(value: string) => {
                           updateWeekStatus(week, value)
                         }}
                         disabled={isUpdating}
                       >
-                        <SelectTrigger className="w-full sm:w-40 bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                        <SelectTrigger className="w-full sm:w-40 bg-black  text-white ">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectContent className="bg-black border-white-300">
                           {statusOptions.map((option) => (
                             <SelectItem
-                              key={option.value}
+                              key={option.value}    
                               value={option.value}
-                              className="text-white hover:bg-gray-700 focus:bg-gray-700"
+                              className="text-white hover:bg-black focus:bg-black data-[state=checked]:bg-black data-[state=checked]:text-white"
                             >
                               <div className="flex items-center gap-2">
                                 <option.icon className={`h-4 w-4 ${option.color}`} />
@@ -398,13 +352,7 @@ export default function DashboardClient({ user, studentData, userClass }: Dashbo
               })()}
             </div>
 
-            <div className="mt-4 p-3 sm:p-4 bg-gray-800 rounded-lg border border-gray-700">
-              <p className="text-gray-300 text-xs sm:text-sm text-center">
-                <Link href="/submissions" className="text-white hover:text-gray-300 underline">
-                  View all {courseDuration} weeks progress in Submissions page
-                </Link>
-              </p>
-            </div>
+      
           </CardContent>
         </Card>
       </main>

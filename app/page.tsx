@@ -1,68 +1,42 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users } from "lucide-react"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { GraduationCap, LogIn, UserPlus } from "lucide-react"
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-black">
-      <header className="border-b border-gray-800 bg-gray-900">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm sm:text-lg">IT</span>
-            </div>
-            <h1 className="text-lg sm:text-2xl font-bold text-white">Department of IT - NPTEL Course Tracker</h1>
-          </div>
+    <div className="min-h-[70vh] flex items-center justify-center p-6">
+      <div className="text-center max-w-md w-full">
+        <div className="flex justify-center mb-8">
+          <GraduationCap className="h-16 w-16 text-white" />
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8 sm:py-16">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4">Select Your Class</h2>
-          <p className="text-base sm:text-lg text-gray-300 mb-8">
-            Choose your class to start tracking your NPTEL course
-          </p>
+        <h2 className="text-2xl font-bold text-white mb-4">NPTEL Course Completion Tracker</h2>
+        
+        <div className="space-y-4">
+          <Button 
+            asChild 
+            variant="outline" 
+            className="w-full border-white-300 text-white hover:bg-gray-800 bg-transparent"
+          >
+            <Link href="/login">
+              <LogIn className="h-5 w-5 mr-2" />
+              Login
+            </Link>
+          </Button>
+          
+          <Button 
+            asChild 
+            variant="outline" 
+            className="w-full border-white-300 text-white hover:bg-gray-800 bg-transparent"
+          >
+            <Link href="/regClasses">
+              <UserPlus className="h-5 w-5 mr-2" />
+              Register
+            </Link>
+          </Button>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto">
-          <Card className="bg-gray-900 border-gray-800 hover:bg-gray-800 transition-colors">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-gray-800 rounded-full w-fit">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <CardTitle className="text-xl sm:text-2xl text-white">II-IT</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <Button asChild className="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-700">
-                <Link href="/register?class=II-IT">Join II-IT</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-800 hover:bg-gray-800 transition-colors">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-gray-800 rounded-full w-fit">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <CardTitle className="text-xl sm:text-2xl text-white">III-IT</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <Button asChild className="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-700">
-                <Link href="/register?class=III-IT">Join III-IT</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="text-center mt-6 sm:mt-8">
-          <Link href="/login" className="text-gray-300 hover:text-white underline text-sm sm:text-base">
-            Already registered? Login with your register number
-          </Link>
-        </div>
-      </main>
+      </div>
     </div>
   )
 }

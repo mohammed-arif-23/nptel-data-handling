@@ -44,5 +44,8 @@ export default function SubmissionsPage() {
     return null // Will redirect via useEffect
   }
 
-  return <SubmissionsClient studentData={studentData} />
+  // Extract userClass from studentData (support both 'class' and 'class_name' keys)
+  const userClass = studentData.class || studentData.class_name || null;
+
+  return <SubmissionsClient studentData={studentData} userClass={userClass} />
 }

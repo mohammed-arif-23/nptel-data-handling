@@ -26,18 +26,9 @@ interface StudentData {
   name: string
   email: string
   roll_number: string
-  week_1_status: string
-  week_2_status: string
-  week_3_status: string
-  week_4_status: string
-  week_5_status: string
-  week_6_status: string
-  week_7_status: string
-  week_8_status: string
-  week_9_status: string
-  week_10_status: string
-  week_11_status: string
-  week_12_status: string
+  course_duration: string
+  // Dynamically generate week status keys
+  [key: `week_${number}_status`]: string
   created_at: string
   updated_at: string
 }
@@ -59,6 +50,9 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
   const router = useRouter()
   const supabase = createClient()
 
+  // Use course_duration dynamically
+  const courseDuration = studentData.course_duration ? Number.parseInt(studentData.course_duration) : 12
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push("/")
@@ -72,10 +66,10 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
     return statusOptions.find((option) => option.value === status) || statusOptions[0]
   }
 
-  // Generate submissions data for all weeks
+  // Generate submissions data dynamically based on course duration
   const submissionsData = useMemo(() => {
     const submissions = []
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= courseDuration; i++) {
       const status = getWeekStatus(i)
       const statusInfo = getStatusInfo(status)
       submissions.push({
@@ -86,7 +80,7 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
       })
     }
     return submissions
-  }, [studentData])
+  }, [studentData, courseDuration])
 
   // Filter submissions based on selected filter
   const filteredSubmissions = useMemo(() => {
@@ -94,22 +88,22 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
     return submissionsData.filter((submission) => submission.status === filterStatus)
   }, [submissionsData, filterStatus])
 
-  // Calculate statistics
+  // Calculate statistics dynamically
   const statistics = useMemo(() => {
     const completed = submissionsData.filter((s) => s.status === "completed").length
     const inProgress = submissionsData.filter((s) => s.status === "in_progress").length
     const notStarted = submissionsData.filter((s) => s.status === "not_started").length
-    const completionRate = Math.round((completed / 12) * 100)
+    const completionRate = Math.round((completed / courseDuration) * 100)
 
     return { completed, inProgress, notStarted, completionRate }
-  }, [submissionsData])
+  }, [submissionsData, courseDuration])
 
   const classInfo = {
-    a: { name: "Class A", color: "blue", bgColor: "bg-blue-600/20", textColor: "text-blue-400" },
-    b: { name: "Class B", color: "emerald", bgColor: "bg-emerald-600/20", textColor: "text-emerald-400" },
+    "II-IT": { name: "II-IT", color: "blue", bgColor: "bg-blue-600/20", textColor: "text-blue-400" },
+    "III-IT": { name: "III-IT", color: "emerald", bgColor: "bg-emerald-600/20", textColor: "text-emerald-400" },
   }
 
-  const currentClass = classInfo[userClass as keyof typeof classInfo]
+  const currentClass = classInfo[userClass as keyof typeof classInfo] || { name: userClass, color: "gray", bgColor: "bg-gray-600/20", textColor: "text-gray-400" };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -152,23 +146,8 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
           <p className="text-slate-300">Track your learning journey and submission progress</p>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <BookOpen className="h-5 w-5 text-slate-400" />
-              <CardTitle className="text-sm font-medium text-slate-200 ml-2">Student</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1">
-                <p className="text-white font-semibold">{studentData.name}</p>
-                <Badge className={`${currentClass.bgColor} ${currentClass.textColor} border-0`}>
-                  {currentClass.name}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
+        {/* Simplified Statistics */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-slate-800/50 border-slate-700">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
               <CheckCircle className="h-5 w-5 text-green-400" />
@@ -176,18 +155,7 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-400">{statistics.completed}</div>
-              <p className="text-slate-300 text-sm">out of 12 weeks</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <Clock className="h-5 w-5 text-yellow-400" />
-              <CardTitle className="text-sm font-medium text-slate-200 ml-2">In Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-400">{statistics.inProgress}</div>
-              <p className="text-slate-300 text-sm">weeks active</p>
+              <p className="text-slate-300 text-sm">out of {courseDuration} weeks</p>
             </CardContent>
           </Card>
 
@@ -201,40 +169,42 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
               <p className="text-slate-300 text-sm">overall progress</p>
             </CardContent>
           </Card>
+
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+              <Filter className="h-5 w-5 text-slate-400" />
+              <CardTitle className="text-sm font-medium text-slate-200 ml-2">Filter</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-full bg-slate-700 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectItem value="all" className="text-white hover:bg-slate-600">
+                    All Status
+                  </SelectItem>
+                  {statusOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-600">
+                      <div className="flex items-center gap-2">
+                        <option.icon className={`h-4 w-4 ${option.color}`} />
+                        {option.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Filter and Submissions List */}
+        {/* Submissions List */}
         <Card className="bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-white">Weekly Submissions</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Complete history of your NPTEL course progress
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-slate-400" />
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-40 bg-slate-700 border-slate-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="all" className="text-white hover:bg-slate-600">
-                      All Status
-                    </SelectItem>
-                    {statusOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-600">
-                        <div className="flex items-center gap-2">
-                          <option.icon className={`h-4 w-4 ${option.color}`} />
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <CardTitle className="text-white">Weekly Submissions</CardTitle>
+            <CardDescription className="text-slate-300">
+              Complete history of your NPTEL course progress
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -261,12 +231,6 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
                       </div>
 
                       <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-slate-300 text-sm">Last Updated</p>
-                          <p className="text-slate-400 text-xs">
-                            {new Date(submission.submittedAt).toLocaleDateString()}
-                          </p>
-                        </div>
                         <Badge
                           className={`${submission.statusInfo.bgColor} ${submission.statusInfo.color} border-0 flex items-center gap-2`}
                         >
@@ -278,64 +242,6 @@ export default function SubmissionsClient({ user, studentData, userClass }: Subm
                   )
                 })
               )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Learning Journey Timeline */}
-        <Card className="bg-slate-800/50 border-slate-700 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white">Learning Journey Timeline</CardTitle>
-            <CardDescription className="text-slate-300">
-              Visual representation of your progress through the course
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-slate-600"></div>
-
-              <div className="space-y-6">
-                {submissionsData.map((submission, index) => {
-                  const StatusIcon = submission.statusInfo.icon
-                  const isCompleted = submission.status === "completed"
-                  const isInProgress = submission.status === "in_progress"
-
-                  return (
-                    <div key={submission.week} className="relative flex items-center gap-4">
-                      {/* Timeline dot */}
-                      <div
-                        className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-2 ${
-                          isCompleted
-                            ? "bg-green-600/20 border-green-400"
-                            : isInProgress
-                              ? "bg-yellow-600/20 border-yellow-400"
-                              : "bg-slate-600/20 border-slate-400"
-                        }`}
-                      >
-                        <StatusIcon
-                          className={`h-5 w-5 ${
-                            isCompleted ? "text-green-400" : isInProgress ? "text-yellow-400" : "text-slate-400"
-                          }`}
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-white font-medium">Week {submission.week}</h3>
-                            <p className="text-slate-400 text-sm">NPTEL Course Module</p>
-                          </div>
-                          <Badge className={`${submission.statusInfo.bgColor} ${submission.statusInfo.color} border-0`}>
-                            {submission.statusInfo.label}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
             </div>
           </CardContent>
         </Card>

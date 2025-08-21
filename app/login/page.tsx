@@ -59,23 +59,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-800 p-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm sm:text-lg">IT</span>
-            </div>
-            <h1 className="text-sm sm:text-xl font-semibold">Department of IT - NPTEL Course Tracker</h1>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-[50vh] flex items-center justify-center flex-col  bg-black text-white">
+     
 
       <main className="max-w-md mx-auto px-4 py-8 sm:py-16">
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">Student Login</h2>
-          <p className="text-gray-400 text-sm sm:text-base">Enter your register number to access your progress</p>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Student Login</h2>
+         <p className="text-white text-sm mb-16">Enter your register number to access your progress</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
@@ -86,9 +76,9 @@ export default function LoginPage() {
               required
               value={registerNumber}
               onChange={(e) => setRegisterNumber(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg focus:outline-none focus:border-gray-600 text-center text-base sm:text-lg text-white placeholder-gray-500"
-              placeholder="e.g., 21IT001"
-              maxLength={10}
+              className="w-full px-4 py-3 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-gray-600 text-center text-base sm:text-lg text-white placeholder-gray-500"
+              placeholder="Enter your register number"
+              
             />
           </div>
 
@@ -101,15 +91,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-800 hover:bg-gray-700 disabled:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors font-medium border border-gray-700"
+            className="w-full bg-white hover:bg-gray-700 disabled:bg-gray-600 text-black py-3 px-4 rounded-lg transition-colors font-medium border border-white-300"
           >
             {loading ? "Checking..." : "Login"}
           </button>
         </form>
 
         <div className="text-center mt-6 sm:mt-8">
-          <p className="text-gray-400 mb-2 text-sm">Don't have an account?</p>
-          <Link href="/" className="text-gray-300 hover:text-white underline text-sm">
+          <p className="text-white mb-2 text-sm">Don't have an account?</p>
+          <Link href="/" className="text-white hover:text-white underline text-sm">
             Register for your class
           </Link>
         </div>
