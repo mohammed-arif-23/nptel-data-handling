@@ -26,14 +26,14 @@ export default function SuccessPage() {
   }, [router, supabase])
 
   return (
-    <div className="min-h-[70vh] bg-black flex items-center justify-center p-6">
+    <div className="min-h-[70vh] flex items-center justify-center p-6">
       <div className="text-center max-w-md w-full">
-        <div className="bg-black rounded-lg p-8 ">
+        <div className="glass rounded-lg p-8 border-white/20">
           <div className="flex justify-center mb-6">
-            <CheckCircle className="h-16 w-16 text-green-500" />
+            <CheckCircle className="h-16 w-16 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">Assignment Updated Successfully!</h1>
-          <p className="text-white mb-6">
+          <h1 className="text-2xl font-bold text-black mb-4">Assignment Updated Successfully!</h1>
+          <p className="text-black mb-6">
             Your assignment status has been updated. You will be logged out automatically in 3 seconds.
           </p>
          

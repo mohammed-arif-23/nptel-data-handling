@@ -60,8 +60,8 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-[70vh] glass flex items-center justify-center">
+        <div className="text-black">Loading...</div>
       </div>
     )
   }

@@ -59,31 +59,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[50vh] flex items-center justify-center flex-col  bg-black text-white">
+    <div className="min-h-[50vh] flex items-center justify-center flex-col">
      
 
       <main className="max-w-md mx-auto px-4 py-8 sm:py-16">
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4">Student Login</h2>
-         <p className="text-white text-sm mb-16">Enter your register number to access your progress</p>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-black">Student Login</h2>
+         <p className="text-gray-600 text-sm mb-16">Enter your register number to access your progress</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-300">Register Number</label>
+            <label className="block text-sm font-medium mb-2 text-black">Register Number</label>
             <input
-              type="text"
+              type="number"
               required
               value={registerNumber}
               onChange={(e) => setRegisterNumber(e.target.value)}
-              className="w-full px-4 py-3 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-gray-600 text-center text-base sm:text-lg text-white placeholder-gray-500"
+              className="w-full px-4 py-3 glass-input border-white/20 rounded-lg focus:outline-none focus:border-white/40 text-center text-base sm:text-lg text-black placeholder-gray-500"
               placeholder="Enter your register number"
               
             />
           </div>
 
           {error && (
-            <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg text-center text-sm">
+            <div className="glass border-red-200 text-red-600 px-4 py-3 rounded-lg text-center text-sm">
               {error}
             </div>
           )}
@@ -91,15 +91,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white hover:bg-gray-700 disabled:bg-gray-600 text-black py-3 px-4 rounded-lg transition-colors font-medium border border-white-300"
+            className="w-full glass-button hover:bg-white/20 disabled:bg-white/10 text-black py-3 px-4 rounded-lg transition-all font-medium border border-white/20"
           >
             {loading ? "Checking..." : "Login"}
           </button>
         </form>
 
         <div className="text-center mt-6 sm:mt-8">
-          <p className="text-white mb-2 text-sm">Don't have an account?</p>
-          <Link href="/" className="text-white hover:text-white underline text-sm">
+          <p className="text-black mb-2 text-sm">Don't have an account?</p>
+          <Link href="/" className="text-black hover:text-gray-600 underline text-sm">
             Register for your class
           </Link>
         </div>

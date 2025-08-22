@@ -100,106 +100,106 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[70vh] bg-black text-white">
+    <div className="min-h-[70vh]">
       <main className="max-w-md mx-auto px-4 ">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Register Number</label>
+            <label className="block text-sm font-medium mb-2 text-black">Register Number</label>
             <input
               type="text"
               required
               value={formData.register_number}
               onChange={(e) => setFormData({ ...formData, register_number: e.target.value.toUpperCase() })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your register number"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Name</label>
+            <label className="block text-sm font-medium mb-2 text-black">Name</label>
             <input
               type="text"
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your full name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2 text-black">Email</label>
             <input
               type="email"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your email address"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Mobile Number</label>
+            <label className="block text-sm font-medium mb-2 text-black">Mobile Number</label>
             <input
               type="tel"
               required
               value={formData.mobile}
               onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter your mobile number"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">NPTEL Course Name</label>
+            <label className="block text-sm font-medium mb-2 text-black">NPTEL Course Name</label>
             <input
               type="text"
               required
               value={formData.nptel_course_name}
               onChange={(e) => setFormData({ ...formData, nptel_course_name: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter NPTEL course name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">NPTEL Course ID</label>
+            <label className="block text-sm font-medium mb-2 text-black">NPTEL Course ID</label>
             <input
               type="text"
               required
               value={formData.nptel_course_id}
               onChange={(e) => setFormData({ ...formData, nptel_course_id: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Enter NPTEL course ID"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Course Duration</label>
+            <label className="block text-sm font-medium mb-2 text-black">Course Duration</label>
             <input
               type="text"
               required
               value={formData.course_duration}
               onChange={(e) => setFormData({ ...formData, course_duration: e.target.value })}
-              className="w-full px-3 py-2 bg-black border border-white-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 glass-input border-white/20 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="e.g., 12 weeks, 8 weeks, 4 weeks"
             />
           </div>
 
-          {error && <div className="text-red-400 text-sm text-center bg-red-900/20 p-3 rounded-lg">{error}</div>}
+          {error && <div className="text-red-600 text-sm text-center glass border-red-200 p-3 rounded-lg">{error}</div>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white border border-white-300 hover:bg-gray-700 disabled:bg-gray-600 text-black py-2 px-4 rounded-lg transition-colors"
+            className="w-full glass-button border border-white/20 hover:bg-white/20 disabled:bg-white/10 text-black py-2 px-4 rounded-lg transition-all"
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
         <div className="text-center mt-6">
-          <Link href="/login" className="text-white-400 hover:text-blue-300 underline">
+          <Link href="/login" className="text-black hover:text-blue-600 underline">
             Already registered? Login here
           </Link>
         </div>
@@ -207,46 +207,46 @@ export default function RegisterPage() {
 
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Registration Details</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-600">
               Please review your details before submitting
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="font-semibold">Register Number:</span>
-              <span>{formData.register_number}</span>
+              <span className="font-semibold text-black">Register Number:</span>
+              <span className="text-black">{formData.register_number}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Name:</span>
-              <span>{formData.name}</span>
+              <span className="font-semibold text-black">Name:</span>
+              <span className="text-black">{formData.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Email:</span>
-              <span>{formData.email}</span>
+              <span className="font-semibold text-black">Email:</span>
+              <span className="text-black">{formData.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Mobile:</span>
-              <span>{formData.mobile}</span>
+              <span className="font-semibold text-black">Mobile:</span>
+              <span className="text-black">{formData.mobile}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Class:</span>
-              <span>{formData.class_name}</span>
+              <span className="font-semibold text-black">Class:</span>
+              <span className="text-black">{formData.class_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">NPTEL Course Name:</span>
-              <span>{formData.nptel_course_name}</span>
+              <span className="font-semibold text-black">NPTEL Course Name:</span>
+              <span className="text-black">{formData.nptel_course_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">NPTEL Course ID:</span>
-              <span>{formData.nptel_course_id}</span>
+              <span className="font-semibold text-black">NPTEL Course ID:</span>
+              <span className="text-black">{formData.nptel_course_id}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Course Duration:</span>
-              <span>{formData.course_duration}</span>
+              <span className="font-semibold text-black">Course Duration:</span>
+              <span className="text-black">{formData.course_duration}</span>
             </div>
           </div>
 
@@ -255,7 +255,7 @@ export default function RegisterPage() {
             <Button 
               onClick={confirmSubmit} 
               disabled={loading}
-              className="bg-white border pb-2 border-white-300 hover:bg-gray-700 text-black"
+              className="glass-button border border-white/20 hover:bg-white/20 text-black"
             >
               {loading ? "Submitting..." : "Confirm"}
             </Button>

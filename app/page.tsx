@@ -8,16 +8,26 @@ export default function Home() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-6">
       <div className="text-center max-w-md w-full">
+       
+        <h2 className="text-xl text-black mb-4">NPTEL Course Completion Tracker</h2>
         <div className="flex justify-center mb-8">
-          <GraduationCap className="h-16 w-16 text-white" />
+          <img src={'logo.png'} className="w-[70%]"/>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-4">NPTEL Course Completion Tracker</h2>
-        
         <div className="space-y-4">
+        <Button 
+            asChild 
+            variant="outline" 
+            className="w-full text-black hover:bg-white/20"
+          >
+            <Link href="/NPTEL">
+           
+            Register for NPTEL Course
+            </Link>
+          </Button>
           <Button 
             asChild 
             variant="outline" 
-            className="w-full border-white-300 text-white hover:bg-gray-800 bg-transparent"
+            className="w-full text-black hover:bg-white/20"
           >
             <Link href="/login">
               <LogIn className="h-5 w-5 mr-2" />
@@ -28,9 +38,9 @@ export default function Home() {
           <Button 
             asChild 
             variant="outline" 
-            className="w-full border-white-300 text-white hover:bg-gray-800 bg-transparent"
+            className="w-full text-black hover:bg-white/20"
           >
-            <Link href="/regClasses">
+            <Link href="/regClasses"> 
               <UserPlus className="h-5 w-5 mr-2" />
               Register
             </Link>
