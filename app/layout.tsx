@@ -41,8 +41,7 @@ export default function RootLayout({
           />
         </div>
 
-        <header className="fixed top-0  left-0 w-full glass z-60 flex justify-center items-center py-4">
-          <div className="flex flex-col items-center">
+        <header className="fixed top-0 left-0 w-full backdrop-blur bg-white/30 z-60 flex justify-center items-center py-4">   <div className="flex flex-col items-center">
             <Image 
               src="https://www.avsenggcollege.ac.in/img/autonomous%20ugc%20png-03-03-01.png" 
               alt="Department of IT" 
