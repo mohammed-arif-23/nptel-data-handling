@@ -11,7 +11,7 @@ export default function Home() {
        
         <h2 className="text-xl text-black mb-4">NPTEL Course Completion Tracker</h2>
         <div className="flex justify-center mb-8">
-          <img src={'logo.png'} className="w-[70%]"/>
+          <img src={'placeholder-home.png'} className="w-[75%]"/>
         </div>
         <div className="space-y-4">
         <Button 
@@ -21,7 +21,7 @@ export default function Home() {
           >
             <Link href="/NPTEL">
            
-            Register for NPTEL Course
+            Guide for Enrolling NPTEL Course
             </Link>
           </Button>
           <Button 

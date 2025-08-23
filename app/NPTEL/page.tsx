@@ -34,7 +34,7 @@ export default function NPTELRegistrationGuide() {
                   <CardTitle className="text-black">Follow these Steps: </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">Click and Open the Below Link to Register for NPTEL Course</p>
+                  <p className="text-gray-600 mb-4">1. Click and Open the Below Link to Register for NPTEL Course</p>
                   <a 
                     className="text-black font-bold mt-4 mb-4 block hover:underline" 
                     href="https://swayam.gov.in/explorer" 
@@ -43,10 +43,13 @@ export default function NPTELRegistrationGuide() {
                   >
                     https://swayam.gov.in/explorer
                   </a>
-                  <p className="text-gray-600 mb-4 mt-4">Scroll and Find Category </p>
-                  <p className="text-gray-600 mb-4">Select "Engineering and Technology"</p>
-                  <p className="text-gray-600 mb-4">Then in Below Sub-Category Select "Computer Science and Engineering"</p>
-                  <p className="text-gray-600 mb-4">Choose Your Preferred Course and Register</p>
+                  <p className="text-gray-600 mb-4 mt-4">2. Scroll and Find Category </p>
+                  <p className="text-gray-600 mb-4">3. Select "Engineering and Technology"</p>
+                  <p className="text-gray-600 mb-4">4. Then in Below Sub-Category Select "Computer Science and Engineering"</p>
+                  <p className="text-gray-600 mb-4">5. Choose Your Preferred Course and Register</p>
+                  <p className="text-gray-600 mb-4">6. Then Select the Course You Prefer to Learn</p>
+                  <p className="text-gray-600 mb-4">7. Click Join Button</p>
+                  <p className="text-gray-600 mb-4">8. Fill up your Details and Enroll your course</p>
                 </CardContent>
               </Card>
             ))}
