@@ -30,7 +30,6 @@ export default function RootLayout({
         `}</style>
       </head>
       <body className="bg-white text-black font-['Poppins'] pt-[150px] relative">
-        {/* Background Image */}
         <div className="fixed inset-0 z-[-1] opacity-20">
           <Image 
             src="/bg.jpg" 
@@ -42,7 +41,7 @@ export default function RootLayout({
           />
         </div>
 
-        <header className="fixed top-0 left-0 w-full glass z-50 flex justify-center items-center py-4">
+        <header className="fixed top-0  left-0 w-full glass z-60 flex justify-center items-center py-4">
           <div className="flex flex-col items-center">
             <Image 
               src="https://www.avsenggcollege.ac.in/img/autonomous%20ugc%20png-03-03-01.png" 
